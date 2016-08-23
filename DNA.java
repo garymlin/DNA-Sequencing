@@ -10,7 +10,6 @@ public class DNA {
 	public static void main(String[] args) throws FileNotFoundException {		
 		if (args.length < 1) {
 			System.out.println("usage: java DNA <input-file> [method-choice]");
-			System.out.println("[method-choice] is optional");
 			return;
 		}
 		
