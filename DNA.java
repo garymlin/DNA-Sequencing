@@ -8,14 +8,27 @@ import java.util.Scanner;
 public class DNA {
 
 	public static void main(String[] args) throws FileNotFoundException {		
-		if (args.length != 1) {
-			System.out.println("usage: java DNA <input-file>");
+		if (args.length < 1) {
+			System.out.println("usage: java DNA <input-file> [method-choice]");
+			System.out.println("[method-choice] is optional");
 			return;
 		}
 		
+		int method;
+		if (args.length > 1) {
+			method = Integer.parseInt(args[1]);
+		}
+		else {
+			method = 2;
+		}
+		
 		ArrayList<String> list = parseFile(args[0]);
-		System.out.println("sequence: " + sequence(list));
-		System.out.println("greedy: " + greedySeq(list));
+		if (method != 1){
+			System.out.println("sequence: " + sequence(list));
+		}
+		if (method != 0) {
+			System.out.println("greedy: " + greedySeq(list));
+		}
 	}
 	
 	// n! exhaustive solution to find sequence.
@@ -37,7 +50,8 @@ public class DNA {
 		return output;
 	}
 	
-	// n^3 greedy solution to find sequence (is not always correct).
+	// n^3*m greedy solution to find sequence (is not always correct).
+	// Where n is the size of the list and m is the longest word.
 	public static String greedySeq(ArrayList<String> list) {
 		String output = "";
 		ArrayList<String> result = maxOverlap(list);
