@@ -5,10 +5,15 @@ JCC = javac
 classes = DNA.java
 
 run: dna
-	java DNA test.txt
 
 dna:
 	$(JCC) $(JFLAGS) $(classes)
+
+1: dna
+	java DNA test1.txt
+
+2: dna
+	java DNA test2.txt
 
 clean:
 	rm -rf *.class
