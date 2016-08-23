@@ -1,27 +1,43 @@
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Scanner;
 
 
 public class DNA {
 
-	public static void main(String[] args) {
-		// TODO Auto-generated method stub
+	public static void main(String[] args) throws FileNotFoundException {		
+		if (args.length != 1) {
+			System.out.println("usage: java DNA <input-file>");
+			return;
+		}
 		
-		ArrayList<String> list = new ArrayList<String>();
-		list.add("abc");list.add("bc");list.add("cd");list.add("de");
-		System.out.println(sequence(list));
-		System.out.println(greedySeq(list));
-
-		ArrayList<String> list1 = new ArrayList<String>();
-		list1.add("ATTAGACCTG");
-		list1.add("CCTGCCGGAA");
-		list1.add("AGACCTGCCG");
-		list1.add("GCCGGAATAC");
-		System.out.println(sequence(list1).equals("ATTAGACCTGCCGGAATAC"));
-		System.out.println(greedySeq(list1).equals("ATTAGACCTGCCGGAATAC"));
-		
+		ArrayList<String> list = parseFile(args[0]);
+		System.out.println("sequence: " + sequence(list));
+		System.out.println("greedy: " + greedySeq(list));
 	}
 	
+	// n! exhaustive solution to find sequence.
+	public static String sequence(ArrayList<String> list) {
+		String output = null;
+		ArrayList<ArrayList<String>> permutations = permute(list);
+		
+		for (int i = 0 ; i < permutations.size(); i++) {
+			ArrayList<String> currList = permutations.get(i);
+			String str = currList.get(0);
+			for (int j = 0 ; j < list.size() - 1; j++) {
+				int overlapLen = overlapCount(currList.get(j), currList.get(j + 1));
+				str += currList.get(j + 1).substring(overlapLen);
+			}
+			if (output == null || output.length() > str.length()) {
+				output = str;
+			}
+		}
+		return output;
+	}
+	
+	// n^3 greedy solution to find sequence (is not always correct).
 	public static String greedySeq(ArrayList<String> list) {
 		String output = "";
 		ArrayList<String> result = maxOverlap(list);
@@ -65,24 +81,6 @@ public class DNA {
 		return output;
 	}
 	
-	public static String sequence(ArrayList<String> list) {
-		String output = null;
-		ArrayList<ArrayList<String>> permutations = permute(list);
-		
-		for (int i = 0 ; i < permutations.size(); i++) {
-			ArrayList<String> currList = permutations.get(i);
-			String str = currList.get(0);
-			for (int j = 0 ; j < list.size() - 1; j++) {
-				int overlapLen = overlapCount(currList.get(j), currList.get(j + 1));
-				str += currList.get(j + 1).substring(overlapLen);
-			}
-			if (output == null || output.length() > str.length()) {
-				output = str;
-			}
-		}
-		return output;
-	}
-	
 	// Given a prefix and suffix, returns the number of letters of overlap.
 	// Starts with the end of the prefix and beginning of suffix.
 	// prefix: ab[cde]
@@ -103,13 +101,14 @@ public class DNA {
 		return count;
 	}
 
-	// Get all permutations of the list.
+	// Get all permutations of the list.  This is for the n! solution.
 	public static ArrayList<ArrayList<String>> permute(ArrayList<String> list) {
 		ArrayList<ArrayList<String>> output = new ArrayList<ArrayList<String>>();
 		permRecurse(list, 0, list.size(), output);
 		return output;
 	}
 	
+	// Helper recursive function for permute().
 	public static void permRecurse(ArrayList<String> list, int l, int r, 
 			ArrayList<ArrayList<String>> output){
 		if (l == r){			
@@ -120,5 +119,22 @@ public class DNA {
 			 permRecurse(list, l + 1, r, output);
 			 Collections.swap(list, l, i);
 		}
+	}
+	
+	// Parses file and outputs arraylist of data.
+	// Only gets items that do not start with a ">"
+	public static ArrayList<String> parseFile(String fileName) throws FileNotFoundException {
+		ArrayList<String> output = new ArrayList<String>();
+		File fileObj = new File(fileName);
+		Scanner file = new Scanner(fileObj);
+		
+		while (file.hasNextLine()) {
+			String line = file.nextLine();
+			if (line.substring(0,1).equals(">")){
+				continue;
+			}
+			output.add(line);
+		}
+		return output;
 	}
 }

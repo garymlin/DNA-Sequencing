@@ -5,7 +5,7 @@ JCC = javac
 classes = DNA.java
 
 run: dna
-	java DNA
+	java DNA test.txt
 
 dna:
 	$(JCC) $(JFLAGS) $(classes)
